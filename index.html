@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知晓传媒 - 招聘助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .settings-bar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .settings-bar label {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .settings-bar input {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            width: 200px;
+        }
+        .settings-bar input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 280px);
+            min-height: 400px;
+        }
+        .panel-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-header .hint {
+            font-size: 12px;
+            color: #999;
+            font-weight: normal;
+        }
+        .panel-body {
+            flex: 1;
+            padding: 15px 20px;
+            overflow-y: auto;
+        }
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            resize: none;
+            font-size: 14px;
+            line-height: 1.8;
+            font-family: inherit;
+            color: #333;
+        }
+        textarea:focus {
+            outline: none;
+        }
+        textarea::placeholder {
+            color: #aaa;
+        }
+        .output-area {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .output-item {
+            padding: 12px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .output-item:last-child {
+            border-bottom: none;
+        }
+        .output-item .title {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .output-item.skip .title {
+            color: #999;
+        }
+        .output-item .content {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .output-item .reason {
+            color: #999;
+            font-size: 13px;
+        }
+        .copy-btn {
+            background: #f0f2f5;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #666;
+            margin-left: 8px;
+        }
+        .copy-btn:hover {
+            background: #e0e2e5;
+        }
+        .action-bar {
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: #f5f7fa;
+            color: #666;
+        }
+        .btn-secondary:hover {
+            background: #e8ebef;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #999;
+            font-size: 14px;
+            padding: 30px 0;
+        }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f0f0f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .welcome {
+            color: #999;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .error {
+            background: #fff2f0;
+            color: #ff4d4f;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        .mode-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+            background: #f5f7fa;
+            padding: 4px;
+            border-radius: 6px;
+        }
+        .mode-tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .mode-tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 知晓传媒 · 招聘助手</h1>
+            <p>把简历直接粘进来（多份也行）我给你生成开场白；把对方消息粘进来我给你生成回复</p>
+        </div>
+
+        <div class="settings-bar">
+            <label>
+                API Key:
+                <input type="password" id="apiKey" placeholder="sk-xxxxxxxx" />
+            </label>
+            <label>
+                API 地址:
+                <input type="text" id="apiBase" value="https://llm-api.net/v1" />
+            </label>
+            <label>
+                模型:
+                <input type="text" id="model" value="gemini-3.5-flash" style="width: 150px;" />
+            </label>
+        </div>
+
+        <div class="main-content">
+            <!-- 输入区 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>输入内容</span>
+                    <span class="hint" id="inputHint">粘贴简历或聊天记录</span>
+                </div>
+                <div class="panel-body">
+                    <div class="mode-tabs">
+                        <div class="mode-tab active" data-mode="auto">自动识别</div>
+                        <div class="mode-tab" data-mode="resume">简历模式</div>
+                        <div class="mode-tab" data-mode="chat">对话模式</div>
+                    </div>
+                    <textarea id="inputText" placeholder="在这里粘贴候选人简历（支持多份）或聊天记录...
+
+示例（简历）：
+张三，25岁，本科学历，有2年带货主播经验，曾在抖音做美妆直播，场均GMV 5万...
+
+示例（对话）：
+候选人：您好，请问这个岗位是做什么的？
+HR：您好，我们是做驾考知识直播的...
+候选人：那薪资待遇怎么样？"></textarea>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary" id="clearBtn">清空</button>
+                    <button class="btn btn-primary" id="generateBtn">生成话术</button>
+                </div>
+            </div>
+
+            <!-- 输出区 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>生成结果</span>
+                    <span class="hint" id="outputHint"></span>
+                </div>
+                <div class="panel-body">
+                    <div id="outputArea" class="output-area">
+                        <div class="welcome">
+                            <div class="welcome-icon">💬</div>
+                            <div>粘贴简历或聊天记录<br>点击「生成话术」开始</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 系统提示词
+        const SYSTEM_PROMPT = `你是知晓传媒的 BOSS直聘 招聘助手，帮 HR 把候选人简历快速变成可直接发送的"开场白"，也能帮忙生成跟候选人聊天的回复。
+
+# 岗位与口径（固定不变）
+岗位：知识付费主播（驾考科一知识直播，郑州二七区线下坐班）。
+公司：知晓传媒，抖音驾考类目 Top3（隔壁王教练教育 等）。
+待遇：试用期无责底薪6000+提成(3%-10%)+五险一金；每天3场共4.5小时不连播；四班倒有夜班(夜班补贴200/天，前期一般不上)；地点郑州二七区正商航海广场B座24楼2405（地铁5号线冯庄站）。
+
+# 判断输入类型
+用户粘进来的内容分两种，你自己判断：
+- A 简历：一份或多份候选人简历（多份可能首尾相连、没有分隔符）。→ 走"开场白模式"。
+- B 对话：候选人发来的消息或一段聊天记录。→ 走"回复模式"。
+
+# A. 开场白模式
+先判断里面有几份简历（自己识别，不要漏、不要把一份拆成两份），逐份处理：
+1）判档 S/B/C/D：
+- S档：教培/驾考/知识付费/带货主播/直播电商/销售/会销电销导购/主课文化课老师（语数英政史地理化生等，不含体育音乐艺术类）。
+- B档：应届播音主持、有镜头表达力但不满足S档。
+- C/D档：纯运营/剪辑/设计/行政/客服、与直播销售无关、期望薪资明显过低、体育音乐艺术类老师；或年龄<22或>38、或大专以下学历。不确定时倾向给B。
+2）只有 S/B 档写开场白；C/D 档不写，标"跳过"。
+3）开场白结构（五句，一口气说完，像真人聊天）：
+① 暖称呼+问候：用敬称"X老师好 / X姐好 / X女士好"，不直呼全名。
+② 带主语的具体称赞：主语是"您"，引用简历里真实写到的平台/角色/成绩，点一句"正是我们需要的人 / 正好用得上"。只引用真实可见内容，绝不脑补简历没写的技能或打法，不堆品类清单。
+③ 一句关联类比：把岗位拿对方熟悉的领域打比方。
+④ 待遇前置：把底薪+提成+五险一金、每天4.5小时分3场不连播、郑州二七区线下坐班 直接摆出来。
+⑤ 软收尾（全文唯一的问句）："感兴趣的话方便聊聊吗？" 或 "您要是有兴趣，我把岗位细节发您？"
+铁律：全文最多一个问题；不以公司名/岗位名开头；前13字是人话不是清单；只引用简历真实内容、不脑补；不用黑话（憋单/留资/打粉）；不用"想聊聊/值得聊聊/期待回复"等空泛收尾；话术里不出现加微信/换联系方式；同一条"你/您"统一；不用破折号、最多一个感叹号且只放在称呼处。
+
+输出格式（每份一段，方便逐条复制）：
+共识别 X 份
+1. 姓名 · S档 （开场白正文）
+2. 姓名 · C档 · 跳过（一句理由）
+
+# B. 回复模式
+按"十步法"推进对话：求简历 → 问经历 → 介绍公司 → 发账号自证（隔壁王教练教育等）→ 说明岗位实质 → 主动披露夜班 → 发工作时间+薪资 → 发地点 → 提带薪试岗 → 约面（给二选一具体时间 + 发正式邀请卡片）。
+语气自然口语、像真人、最多一个问题、不堆符号、不用黑话。
+铁律：不主动加微信/换联系方式；对方主动要换也婉拒，用"咱先在 BOSS 上聊就挺方便的哈，面试细节我这边发您"；若已约面成功（发过邀请卡片+确认时间），在回复末尾加"（可移交人工跟进）"。
+
+只输出那条要发给候选人的回复文本，不要解释、不要加引号。`;
+
+        // 状态管理
+        let currentMode = 'auto';
+        let isGenerating = false;
+
+        // DOM 元素
+        const apiKeyInput = document.getElementById('apiKey');
+        const apiBaseInput = document.getElementById('apiBase');
+        const modelInput = document.getElementById('model');
+        const inputText = document.getElementById('inputText');
+        const outputArea = document.getElementById('outputArea');
+        const generateBtn = document.getElementById('generateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const outputHint = document.getElementById('outputHint');
+        const modeTabs = document.querySelectorAll('.mode-tab');
+
+        // 从 localStorage 加载设置
+        function loadSettings() {
+            const savedKey = localStorage.getItem('recruit_apiKey');
+            const savedBase = localStorage.getItem('recruit_apiBase');
+            const savedModel = localStorage.getItem('recruit_model');
+            if (savedKey) apiKeyInput.value = savedKey;
+            if (savedBase) apiBaseInput.value = savedBase;
+            if (savedModel) modelInput.value = savedModel;
+        }
+
+        // 保存设置到 localStorage
+        function saveSettings() {
+            localStorage.setItem('recruit_apiKey', apiKeyInput.value);
+            localStorage.setItem('recruit_apiBase', apiBaseInput.value);
+            localStorage.setItem('recruit_model', modelInput.value);
+        }
+
+        // 模式切换
+        modeTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                modeTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentMode = tab.dataset.mode;
+            });
+        });
+
+        // 生成按钮
+        generateBtn.addEventListener('click', async () => {
+            const text = inputText.value.trim();
+            if (!text) {
+                showError('请先输入简历或聊天记录');
+                return;
+            }
+            if (!apiKeyInput.value.trim()) {
+                showError('请先填写 API Key');
+                return;
+            }
+
+            saveSettings();
+            await generate(text);
+        });
+
+        // 清空按钮
+        clearBtn.addEventListener('click', () => {
+            inputText.value = '';
+            outputArea.innerHTML = `
+                <div class="welcome">
+                    <div class="welcome-icon">💬</div>
+                    <div>粘贴简历或聊天记录<br>点击「生成话术」开始</div>
+                </div>
+            `;
+            outputHint.textContent = '';
+        });
+
+        // 显示错误
+        function showError(msg) {
+            outputArea.innerHTML = `<div class="error">${msg}</div>`;
+        }
+
+        // 调用 API
+        async function generate(inputText) {
+            if (isGenerating) return;
+            isGenerating = true;
+            generateBtn.disabled = true;
+            generateBtn.textContent = '生成中...';
+
+            // 显示加载状态
+            outputArea.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>正在分析内容并生成话术...</span>
+                </div>
+            `;
+            outputHint.textContent = '';
+
+            try {
+                const apiKey = apiKeyInput.value.trim();
+                const apiBase = apiBaseInput.value.trim().replace(/\/$/, '');
+                const model = modelInput.value.trim();
+
+                let userPrompt = inputText;
+                if (currentMode === 'resume') {
+                    userPrompt = '【简历模式】\n' + inputText;
+                } else if (currentMode === 'chat') {
+                    userPrompt = '【对话模式】\n' + inputText;
+                }
+
+                const response = await fetch(`${apiBase}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: 'system', content: SYSTEM_PROMPT },
+                            { role: 'user', content: userPrompt }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 4000
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error?.message || `API 请求失败 (${response.status})`);
+                }
+
+                const data = await response.json();
+                const result = data.choices[0].message.content;
+
+                // 渲染结果
+                renderResult(result);
+
+            } catch (error) {
+                console.error('生成失败:', error);
+                showError(`生成失败：${error.message}`);
+            } finally {
+                isGenerating = false;
+                generateBtn.disabled = false;
+                generateBtn.textContent = '生成话术';
+            }
+        }
+
+        // 渲染结果
+        function renderResult(text) {
+            const lines = text.trim().split('\n');
+            let html = '';
+            let count = 0;
+
+            // 解析简历模式的输出
+            const resumePattern = /^\d+\.\s+(.+?)\s*·\s*(S|B|C|D)档/i;
+            
+            for (const line of lines) {
+                const match = line.match(resumePattern);
+                if (match) {
+                    count++;
+                    const name = match[1];
+                    const level = match[2].toUpperCase();
+                    const isSkip = level === 'C' || level === 'D';
+                    
+                    // 提取理由或开场白
+                    let content = line.substring(match[0].length).trim();
+                    
+                    // 处理跳过的情况
+                    if (isSkip && content.startsWith('· 跳过')) {
+                        const reason = content.replace(/^· 跳过\s*（?/, '').replace(/）?$/, '');
+                        html += `
+                            <div class="output-item skip">
+                                <div class="title">
+                                    ${name} · ${level}档 · 跳过
+                                    <button class="copy-btn" onclick="copyText('${name} · ${level}档 · 跳过')">复制</button>
+                                </div>
+                                <div class="reason">${reason}</div>
+                            </div>
+                        `;
+                    } else {
+                        // S/B档开场白
+                        const opener = content.replace(/^[·\s]+/, '').trim();
+                        html += `
+                            <div class="output-item">
+                                <div class="title">
+                                    ${name} · ${level}档
+                                    <button class="copy-btn" onclick="copyText(this.nextElementSibling.textContent)">复制</button>
+                                </div>
+                                <div class="content">${opener}</div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            // 如果不是简历格式，按对话模式或纯文本显示
+            if (count === 0) {
+                html = `
+                    <div class="output-item">
+                        <div class="title">
+                            回复话术
+                            <button class="copy-btn" onclick="copyText(this.parentElement.nextElementSibling.textContent)">复制</button>
+                        </div>
+                        <div class="content">${text.replace(/\n/g, '<br>')}</div>
+                    </div>
+                `;
+            } else {
+                outputHint.textContent = `共 ${count} 位候选人`;
+            }
+
+            outputArea.innerHTML = html;
+        }
+
+        // 复制文本
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // 可以加个复制成功的提示
+            }).catch(err => {
+                console.error('复制失败:', err);
+            });
+        }
+
+        // 全局暴露给onclick用
+        window.copyText = copyText;
+
+        // 初始化
+        loadSettings();
+    </script>
+</body>
+</html>
