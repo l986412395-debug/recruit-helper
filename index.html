@@ -5,24 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>知晓传媒 · AI招聘助手</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #00f5ff;
             --secondary: #7b2ff7;
             --accent: #ff00ff;
+            --success: #00ff88;
             --bg-dark: #0a0a0f;
             --bg-card: rgba(20, 20, 35, 0.6);
-            --bg-card-hover: rgba(30, 30, 50, 0.8);
             --text-primary: #ffffff;
             --text-secondary: #a0a0c0;
             --border-glow: rgba(0, 245, 255, 0.3);
         }
-
         body {
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: var(--bg-dark);
@@ -31,649 +25,208 @@
             position: relative;
             overflow-x: hidden;
         }
-
-        /* 背景动画网格 */
         .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
                 linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
-
-        /* 背景光晕 */
         .bg-glow {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.4;
+            position: fixed; width: 600px; height: 600px; border-radius: 50%;
+            filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.4;
         }
-
-        .glow-1 {
-            top: -200px;
-            left: -200px;
-            background: var(--secondary);
-            animation: float1 8s ease-in-out infinite;
-        }
-
-        .glow-2 {
-            bottom: -200px;
-            right: -200px;
-            background: var(--primary);
-            animation: float2 10s ease-in-out infinite;
-        }
-
-        .glow-3 {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--accent);
-            opacity: 0.15;
-            animation: pulse 6s ease-in-out infinite;
-        }
-
-        @keyframes float1 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(100px, 100px); }
-        }
-
-        @keyframes float2 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-100px, -100px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.1; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.2); }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 30px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* 顶部标题 */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
+        .glow-1 { top: -200px; left: -200px; background: var(--secondary); animation: float1 8s ease-in-out infinite; }
+        .glow-2 { bottom: -200px; right: -200px; background: var(--primary); animation: float2 10s ease-in-out infinite; }
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(100px, 100px); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-100px, -100px); } }
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px 20px; position: relative; z-index: 1; }
+        .header { text-align: center; margin-bottom: 25px; }
         .header h1 {
-            font-size: 42px;
-            font-weight: 800;
+            font-size: 38px; font-weight: 800;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            animation: gradientShift 4s ease infinite;
-            background-size: 200% 200%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            letter-spacing: 2px; margin-bottom: 6px;
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .header .subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        .header .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(0, 245, 255, 0.1);
-            border: 1px solid var(--border-glow);
-            border-radius: 20px;
-            font-size: 11px;
-            color: var(--primary);
-            margin-top: 10px;
-            letter-spacing: 1px;
-        }
-
-        /* 设置面板 */
+        .header .subtitle { color: var(--text-secondary); font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
         .settings-bar {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glow);
-            border-radius: 16px;
-            padding: 20px 25px;
-            margin-bottom: 25px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            background: var(--bg-card); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow); border-radius: 14px;
+            padding: 16px 20px; margin-bottom: 20px;
+            display: flex; gap: 15px; align-items: center; flex-wrap: wrap;
         }
-
-        .setting-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-            min-width: 180px;
-        }
-
-        .setting-item label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
+        .setting-item { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
+        .setting-item label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; }
         .setting-item input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(0, 245, 255, 0.2);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: all 0.3s;
-            font-family: inherit;
+            background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 6px; padding: 8px 12px; color: var(--text-primary);
+            font-size: 13px; font-family: inherit; transition: all 0.3s;
         }
-
-        .setting-item input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        /* 主内容区 */
+        .setting-item input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 245, 255, 0.15); }
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            height: calc(100vh - 340px);
-            min-height: 500px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            height: calc(100vh - 320px); min-height: 480px;
         }
-
-        @media (max-width: 1000px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-            .panel {
-                min-height: 400px;
-            }
+        @media (max-width: 900px) {
+            .main-content { grid-template-columns: 1fr; height: auto; }
+            .panel { min-height: 380px; }
         }
-
-        /* 面板 */
         .panel {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glow);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            background: var(--bg-card); backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow); border-radius: 14px;
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
         }
-
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            animation: scanline 3s linear infinite;
-        }
-
-        @keyframes scanline {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .panel:hover {
-            border-color: rgba(0, 245, 255, 0.5);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
-                        0 0 40px rgba(0, 245, 255, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        }
-
         .panel-header {
-            padding: 18px 25px;
-            border-bottom: 1px solid rgba(0, 245, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 15px;
-            letter-spacing: 1px;
+            padding: 14px 20px; border-bottom: 1px solid rgba(0, 245, 255, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: 600; font-size: 14px;
         }
-
-        .panel-header .title-icon {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .panel-header .title-icon { display: inline-flex; align-items: center; gap: 8px; }
         .panel-header .icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
+            width: 24px; height: 24px; border-radius: 6px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
         }
-
-        .panel-header .hint {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: normal;
-        }
-
-        .panel-body {
-            flex: 1;
-            padding: 20px 25px;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* 滚动条样式 */
-        .panel-body::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .panel-body::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .panel-body::-webkit-scrollbar-thumb {
-            background: rgba(0, 245, 255, 0.2);
-            border-radius: 3px;
-        }
-
-        .panel-body::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 245, 255, 0.4);
-        }
-
-        /* 模式切换 */
+        .panel-header .hint { font-size: 11px; color: var(--text-secondary); font-weight: normal; }
+        .panel-body { flex: 1; padding: 15px 20px; overflow-y: auto; }
         .mode-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 4px;
-            border-radius: 10px;
+            display: flex; gap: 3px; margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.3); padding: 3px; border-radius: 8px;
             border: 1px solid rgba(0, 245, 255, 0.1);
         }
-
         .mode-tab {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 6px;
-            color: var(--text-secondary);
-            transition: all 0.3s;
-            font-weight: 500;
+            flex: 1; padding: 8px; text-align: center; font-size: 12px;
+            cursor: pointer; border-radius: 5px; color: var(--text-secondary);
+            transition: all 0.3s; font-weight: 500;
         }
-
-        .mode-tab:hover {
-            color: var(--text-primary);
-        }
-
         .mode-tab.active {
             background: linear-gradient(135deg, rgba(0, 245, 255, 0.2), rgba(123, 47, 247, 0.2));
             color: var(--primary);
-            box-shadow: 0 2px 8px rgba(0, 245, 255, 0.2);
         }
-
-        /* 输入框 */
         textarea {
-            width: 100%;
-            height: calc(100% - 50px);
-            background: transparent;
-            border: none;
-            resize: none;
-            font-size: 14px;
-            line-height: 1.8;
-            color: var(--text-primary);
-            font-family: inherit;
+            width: 100%; height: calc(100% - 45px);
+            background: transparent; border: none; resize: none;
+            font-size: 13px; line-height: 1.8; color: var(--text-primary); font-family: inherit;
         }
-
-        textarea:focus {
-            outline: none;
-        }
-
-        textarea::placeholder {
-            color: rgba(160, 160, 192, 0.5);
-        }
-
-        /* 操作按钮区 */
+        textarea:focus { outline: none; }
+        textarea::placeholder { color: rgba(160, 160, 192, 0.5); }
         .action-bar {
-            padding: 15px 25px 20px;
-            border-top: 1px solid rgba(0, 245, 255, 0.1);
-            display: flex;
-            gap: 12px;
+            padding: 12px 20px 16px; border-top: 1px solid rgba(0, 245, 255, 0.1);
+            display: flex; gap: 10px;
         }
-
         .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
+            padding: 10px 20px; border: none; border-radius: 8px;
+            font-size: 13px; cursor: pointer; transition: all 0.3s;
+            font-weight: 600; letter-spacing: 0.5px;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: #fff;
-            flex: 1;
-            box-shadow: 0 4px 20px rgba(0, 245, 255, 0.3);
+            color: #fff; flex: 1; box-shadow: 0 4px 15px rgba(0, 245, 255, 0.25);
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(0, 245, 255, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 245, 255, 0.35); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05); color: var(--text-secondary);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-
-        /* 输出区域 */
-        .output-area {
-            font-size: 14px;
-            line-height: 1.8;
-        }
-
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+        .output-area { font-size: 13px; line-height: 1.8; }
         .output-item {
-            padding: 15px;
-            margin-bottom: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(0, 245, 255, 0.1);
-            border-radius: 10px;
-            transition: all 0.3s;
+            padding: 12px 14px; margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+            border-radius: 8px; transition: all 0.3s;
         }
-
-        .output-item:hover {
-            border-color: rgba(0, 245, 255, 0.3);
-            background: rgba(0, 0, 0, 0.3);
-        }
-
+        .output-item:hover { border-color: rgba(0, 245, 255, 0.3); }
         .output-item .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; flex-wrap: wrap; gap: 6px;
         }
-
-        .output-item .name {
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 14px;
-        }
-
+        .output-item .name { font-weight: 600; color: var(--primary); font-size: 13px; }
         .output-item .level {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: rgba(0, 245, 255, 0.1);
-            color: var(--primary);
-            letter-spacing: 0.5px;
+            font-size: 10px; padding: 2px 6px; border-radius: 3px;
+            background: rgba(0, 245, 255, 0.15); color: var(--primary);
         }
-
-        .output-item.skip .name {
-            color: var(--text-secondary);
-        }
-
-        .output-item.skip .level {
-            background: rgba(160, 160, 192, 0.1);
-            color: var(--text-secondary);
-        }
-
+        .output-item.skip .name { color: var(--text-secondary); }
+        .output-item.skip .level { background: rgba(160, 160, 192, 0.15); color: var(--text-secondary); }
         .output-item .content {
-            color: var(--text-primary);
-            font-size: 13px;
-            line-height: 1.7;
+            color: var(--text-primary); font-size: 12.5px; line-height: 1.9;
+            word-break: break-all;
         }
-
-        .output-item .reason {
-            color: var(--text-secondary);
-            font-size: 12px;
-            font-style: italic;
-        }
-
+        .output-item .reason { color: var(--text-secondary); font-size: 12px; font-style: italic; }
         .copy-btn {
-            background: rgba(0, 245, 255, 0.1);
-            border: 1px solid rgba(0, 245, 255, 0.2);
-            color: var(--primary);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.3s;
+            background: rgba(0, 245, 255, 0.12); border: 1px solid rgba(0, 245, 255, 0.25);
+            color: var(--primary); padding: 4px 10px; border-radius: 5px;
+            font-size: 11px; cursor: pointer; transition: all 0.2s;
         }
-
-        .copy-btn:hover {
-            background: rgba(0, 245, 255, 0.2);
-        }
-
-        /* 欢迎状态 */
-        .welcome {
-            text-align: center;
-            padding: 80px 20px;
-            color: var(--text-secondary);
-        }
-
-        .welcome-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .welcome-text {
-            font-size: 15px;
-            margin-bottom: 8px;
-        }
-
-        .welcome-hint {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        /* 加载动画 */
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 60px 0;
-        }
-
+        .copy-btn:hover { background: rgba(0, 245, 255, 0.22); }
+        .copy-btn.copied { background: rgba(0, 255, 136, 0.2); border-color: rgba(0, 255, 136, 0.4); color: var(--success); }
+        .header-actions { display: flex; gap: 6px; align-items: center; }
+        .welcome { text-align: center; padding: 70px 20px; color: var(--text-secondary); }
+        .welcome-icon { font-size: 56px; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .welcome-text { font-size: 14px; margin-bottom: 6px; }
+        .welcome-hint { font-size: 12px; opacity: 0.7; }
+        .loading { display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 50px 0; }
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(0, 245, 255, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            position: relative;
+            width: 40px; height: 40px; border: 3px solid rgba(0, 245, 255, 0.1);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
-
-        .spinner::after {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            right: -6px;
-            bottom: -6px;
-            border: 2px solid transparent;
-            border-top-color: var(--secondary);
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite reverse;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-            letter-spacing: 2px;
-        }
-
-        /* 错误提示 */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: var(--text-secondary); font-size: 13px; letter-spacing: 1px; }
         .error {
-            background: rgba(255, 77, 79, 0.1);
-            border: 1px solid rgba(255, 77, 79, 0.3);
-            color: #ff6b6b;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 15px;
+            background: rgba(255, 77, 79, 0.1); border: 1px solid rgba(255, 77, 79, 0.3);
+            color: #ff6b6b; padding: 12px 16px; border-radius: 8px;
+            font-size: 12.5px; margin-bottom: 12px;
         }
-
-        /* 统计信息 */
-        .stats {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
+        .stats { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
         .stat-item {
-            flex: 1;
+            flex: 1; min-width: 50px;
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(0, 245, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
+            border-radius: 6px; padding: 8px 6px; text-align: center;
         }
-
         .stat-number {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 18px; font-weight: 700;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+        .stat-label { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+        .raw-output {
+            margin-top: 12px; padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.3); border-radius: 6px;
+            border: 1px dashed rgba(0, 245, 255, 0.2);
         }
-
-        /* 角落装饰 */
-        .corner {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--primary);
-            opacity: 0.5;
+        .raw-output summary { cursor: pointer; color: var(--text-secondary); font-size: 11px; }
+        .raw-output pre {
+            margin-top: 8px; font-size: 10.5px; color: var(--text-secondary);
+            white-space: pre-wrap; word-break: break-all;
+            max-height: 180px; overflow-y: auto;
         }
-
-        .corner-tl {
-            top: -1px;
-            left: -1px;
-            border-right: none;
-            border-bottom: none;
-            border-radius: 16px 0 0 0;
+        .toast {
+            position: fixed; top: 20px; right: 20px;
+            padding: 10px 16px; background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--success); color: var(--success);
+            border-radius: 6px; font-size: 12px; z-index: 9999;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 1.5s forwards;
         }
-
-        .corner-tr {
-            top: -1px;
-            right: -1px;
-            border-left: none;
-            border-bottom: none;
-            border-radius: 0 16px 0 0;
-        }
-
-        .corner-bl {
-            bottom: -1px;
-            left: -1px;
-            border-right: none;
-            border-top: none;
-            border-radius: 0 0 0 16px;
-        }
-
-        .corner-br {
-            bottom: -1px;
-            right: -1px;
-            border-left: none;
-            border-top: none;
-            border-radius: 0 0 16px 0;
-        }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
     </style>
 </head>
 <body>
-    <!-- 背景效果 -->
     <div class="bg-grid"></div>
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
-    <div class="bg-glow glow-3"></div>
 
     <div class="container">
-        <!-- 头部 -->
         <div class="header">
             <h1>AI 招聘助手</h1>
             <p class="subtitle">KNOW MEDIA · RECRUIT HELPER</p>
-            <div class="badge">⚡ Powered by Gemini 3.5 Flash</div>
         </div>
 
-        <!-- 设置栏 -->
         <div class="settings-bar">
             <div class="setting-item">
                 <label>API Key</label>
@@ -689,56 +242,31 @@
             </div>
         </div>
 
-        <!-- 主内容 -->
         <div class="main-content">
-            <!-- 输入面板 -->
             <div class="panel">
-                <div class="corner corner-tl"></div>
-                <div class="corner corner-tr"></div>
-                <div class="corner corner-bl"></div>
-                <div class="corner corner-br"></div>
-                
                 <div class="panel-header">
-                    <span class="title-icon">
-                        <span class="icon">📝</span>
-                        输入内容
-                    </span>
-                    <span class="hint" id="inputHint">粘贴简历或对话记录</span>
+                    <span class="title-icon"><span class="icon">📝</span>输入内容</span>
+                    <span class="hint">粘贴简历或对话记录</span>
                 </div>
-                
                 <div class="panel-body">
                     <div class="mode-tabs">
                         <div class="mode-tab active" data-mode="auto">自动识别</div>
                         <div class="mode-tab" data-mode="resume">简历模式</div>
                         <div class="mode-tab" data-mode="chat">对话模式</div>
                     </div>
-                    <textarea id="inputText" placeholder="在此粘贴候选人简历...
-
-💡 支持多份简历批量处理，直接首尾相连粘贴即可
-💡 也可以粘贴聊天记录，自动生成回复话术"></textarea>
+                    <textarea id="inputText" placeholder="在此粘贴候选人简历...&#10;&#10;💡 支持多份简历批量处理&#10;💡 也可以粘贴聊天记录生成回复&#10;⌨️ 快捷键：Ctrl + Enter"></textarea>
                 </div>
-                
                 <div class="action-bar">
                     <button class="btn btn-secondary" id="clearBtn">清空</button>
                     <button class="btn btn-primary" id="generateBtn">✨ 生成话术</button>
                 </div>
             </div>
 
-            <!-- 输出面板 -->
             <div class="panel">
-                <div class="corner corner-tl"></div>
-                <div class="corner corner-tr"></div>
-                <div class="corner corner-bl"></div>
-                <div class="corner corner-br"></div>
-                
                 <div class="panel-header">
-                    <span class="title-icon">
-                        <span class="icon">🎯</span>
-                        生成结果
-                    </span>
+                    <span class="title-icon"><span class="icon">🎯</span>生成结果</span>
                     <span class="hint" id="outputHint"></span>
                 </div>
-                
                 <div class="panel-body">
                     <div id="outputArea" class="output-area">
                         <div class="welcome">
@@ -753,7 +281,6 @@
     </div>
 
     <script>
-        // 系统提示词
         const SYSTEM_PROMPT = `你是知晓传媒的 BOSS直聘 招聘助手，帮 HR 把候选人简历快速变成可直接发送的"开场白"，也能帮忙生成跟候选人聊天的回复。
 
 # 岗位与口径（固定不变）
@@ -767,62 +294,119 @@
 - B 对话：候选人发来的消息或一段聊天记录。→ 走"回复模式"。
 
 # A. 开场白模式
-先判断里面有几份简历（自己识别，不要漏、不要把一份拆成两份），逐份处理：
+先判断里面有几份简历，逐份处理：
 1）判档 S/B/C/D：
 - S档：教培/驾考/知识付费/带货主播/直播电商/销售/会销电销导购/主课文化课老师（语数英政史地理化生等，不含体育音乐艺术类）。
 - B档：应届播音主持、有镜头表达力但不满足S档。
 - C/D档：纯运营/剪辑/设计/行政/客服、与直播销售无关、期望薪资明显过低、体育音乐艺术类老师；或年龄<22或>38、或大专以下学历。不确定时倾向给B。
 2）只有 S/B 档写开场白；C/D 档不写，标"跳过"。
-3）开场白结构（五句，一口气说完，像真人聊天）：
-① 暖称呼+问候：用敬称"X老师好 / X姐好 / X女士好"，不直呼全名。
-② 带主语的具体称赞：主语是"您"，引用简历里真实写到的平台/角色/成绩，点一句"正是我们需要的人 / 正好用得上"。只引用真实可见内容，绝不脑补简历没写的技能或打法，不堆品类清单。
-③ 一句关联类比：把岗位拿对方熟悉的领域打比方。
-④ 待遇前置：把底薪+提成+五险一金、每天4.5小时分3场不连播、郑州二七区线下坐班 直接摆出来。
-⑤ 软收尾（全文唯一的问句）："感兴趣的话方便聊聊吗？" 或 "您要是有兴趣，我把岗位细节发您？"
-铁律：全文最多一个问题；不以公司名/岗位名开头；前13字是人话不是清单；只引用简历真实内容、不脑补；不用黑话（憋单/留资/打粉）；不用"想聊聊/值得聊聊/期待回复"等空泛收尾；话术里不出现加微信/换联系方式；同一条"你/您"统一；不用破折号、最多一个感叹号且只放在称呼处。
+3）开场白结构（五句，一口气说完）：
+① 暖称呼+问候：用敬称"X老师好 / X姐好 / X女士好"
+② 带主语的具体称赞：主语是"您"，引用简历里真实写到的平台/角色/成绩
+③ 一句关联类比：把岗位拿对方熟悉的领域打比方
+④ 待遇前置：把底薪+提成+五险一金、每天4.5小时分3场不连播、郑州二七区线下坐班 直接摆出来
+⑤ 软收尾："感兴趣的话方便聊聊吗？" 或 "您要是有兴趣，我把岗位细节发您？"
 
-输出格式（每份一段，方便逐条复制）：
+输出格式（每份一行，用·分隔）：
 共识别 X 份
-1. 姓名 · S档 （开场白正文）
-2. 姓名 · C档 · 跳过（一句理由）
+1. 张三·S档·张老师好，看您之前有3年抖音带货主播经验，正是我们需要的人...
+2. 李四·B档·李老师好，看您是播音主持专业毕业，形象气质佳...
+3. 王五·C档·跳过（与直播销售岗位不匹配）
+
+注意：开场白内容紧跟在档级后面，用 · 分隔，不要换行！
 
 # B. 回复模式
-按"十步法"推进对话：求简历 → 问经历 → 介绍公司 → 发账号自证（隔壁王教练教育等）→ 说明岗位实质 → 主动披露夜班 → 发工作时间+薪资 → 发地点 → 提带薪试岗 → 约面（给二选一具体时间 + 发正式邀请卡片）。
-语气自然口语、像真人、最多一个问题、不堆符号、不用黑话。
-铁律：不主动加微信/换联系方式；对方主动要换也婉拒，用"咱先在 BOSS 上聊就挺方便的哈，面试细节我这边发您"；若已约面成功（发过邀请卡片+确认时间），在回复末尾加"（可移交人工跟进）"。
+按"十步法"推进对话，语气自然口语、像真人、最多一个问题。
+只输出回复文本，不要解释。`;
 
-只输出那条要发给候选人的回复文本，不要解释、不要加引号。`;
-
-        // 状态管理
+        // 状态
         let currentMode = 'auto';
         let isGenerating = false;
 
-        // DOM 元素
-        const apiKeyInput = document.getElementById('apiKey');
-        const apiBaseInput = document.getElementById('apiBase');
-        const modelInput = document.getElementById('model');
-        const inputText = document.getElementById('inputText');
-        const outputArea = document.getElementById('outputArea');
-        const generateBtn = document.getElementById('generateBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const outputHint = document.getElementById('outputHint');
+        // DOM
+        const $ = id => document.getElementById(id);
+        const apiKeyInput = $('apiKey');
+        const apiBaseInput = $('apiBase');
+        const modelInput = $('model');
+        const inputText = $('inputText');
+        const outputArea = $('outputArea');
+        const generateBtn = $('generateBtn');
+        const clearBtn = $('clearBtn');
+        const outputHint = $('outputHint');
         const modeTabs = document.querySelectorAll('.mode-tab');
 
-        // 从 localStorage 加载设置
+        // 加载设置
         function loadSettings() {
-            const savedKey = localStorage.getItem('recruit_apiKey');
-            const savedBase = localStorage.getItem('recruit_apiBase');
-            const savedModel = localStorage.getItem('recruit_model');
-            if (savedKey) apiKeyInput.value = savedKey;
-            if (savedBase) apiBaseInput.value = savedBase;
-            if (savedModel) modelInput.value = savedModel;
+            apiKeyInput.value = localStorage.getItem('recruit_apiKey') || '';
+            apiBaseInput.value = localStorage.getItem('recruit_apiBase') || 'https://llm-api.net/v1';
+            modelInput.value = localStorage.getItem('recruit_model') || 'gemini-3.5-flash';
         }
 
-        // 保存设置到 localStorage
+        // 保存设置
         function saveSettings() {
             localStorage.setItem('recruit_apiKey', apiKeyInput.value);
             localStorage.setItem('recruit_apiBase', apiBaseInput.value);
             localStorage.setItem('recruit_model', modelInput.value);
+        }
+
+        // Toast 提示
+        function showToast(msg, isError = false) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            if (isError) { t.style.borderColor = '#ff6b6b'; t.style.color = '#ff6b6b'; }
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 1800);
+        }
+
+        // 复制到剪贴板
+        function copyText(text, btn) {
+            try {
+                // 方案1: 现代 API
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        if (btn) {
+                            const orig = btn.textContent;
+                            btn.textContent = '已复制 ✓';
+                            btn.classList.add('copied');
+                            setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+                        } else {
+                            showToast('已复制到剪贴板');
+                        }
+                    }).catch(() => fallbackCopy(text, btn));
+                } else {
+                    fallbackCopy(text, btn);
+                }
+            } catch (e) {
+                fallbackCopy(text, btn);
+            }
+        }
+
+        // 兼容旧浏览器的复制方案
+        function fallbackCopy(text, btn) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+                document.body.appendChild(ta);
+                ta.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(ta);
+                if (success) {
+                    if (btn) {
+                        const orig = btn.textContent;
+                        btn.textContent = '已复制 ✓';
+                        btn.classList.add('copied');
+                        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+                    } else {
+                        showToast('已复制到剪贴板');
+                    }
+                } else {
+                    showToast('复制失败，请手动选择复制', true);
+                }
+            } catch (e) {
+                showToast('复制失败', true);
+            }
         }
 
         // 模式切换
@@ -835,19 +419,12 @@
         });
 
         // 生成按钮
-        generateBtn.addEventListener('click', async () => {
+        generateBtn.addEventListener('click', () => {
             const text = inputText.value.trim();
-            if (!text) {
-                showError('请先输入简历或聊天记录');
-                return;
-            }
-            if (!apiKeyInput.value.trim()) {
-                showError('请先填写 API Key');
-                return;
-            }
-
+            if (!text) { showToast('请先输入内容', true); return; }
+            if (!apiKeyInput.value.trim()) { showToast('请先填写 API Key', true); return; }
             saveSettings();
-            await generate(text);
+            generate(text);
         });
 
         // 清空按钮
@@ -858,30 +435,22 @@
                     <div class="welcome-icon">🚀</div>
                     <div class="welcome-text">准备好了吗？</div>
                     <div class="welcome-hint">粘贴简历，一键生成专业开场白</div>
-                </div>
-            `;
+                </div>`;
             outputHint.textContent = '';
         });
 
-        // 显示错误
-        function showError(msg) {
-            outputArea.innerHTML = `<div class="error">⚠️ ${msg}</div>`;
-        }
-
         // 调用 API
-        async function generate(inputText) {
+        async function generate(input) {
             if (isGenerating) return;
             isGenerating = true;
             generateBtn.disabled = true;
             generateBtn.textContent = '生成中...';
 
-            // 显示加载状态
             outputArea.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
                     <span class="loading-text">AI 正在分析并生成话术...</span>
-                </div>
-            `;
+                </div>`;
             outputHint.textContent = '';
 
             try {
@@ -889,19 +458,13 @@
                 const apiBase = apiBaseInput.value.trim().replace(/\/$/, '');
                 const model = modelInput.value.trim();
 
-                let userPrompt = inputText;
-                if (currentMode === 'resume') {
-                    userPrompt = '【简历模式】\n' + inputText;
-                } else if (currentMode === 'chat') {
-                    userPrompt = '【对话模式】\n' + inputText;
-                }
+                let userPrompt = input;
+                if (currentMode === 'resume') userPrompt = '【简历模式】\n' + input;
+                if (currentMode === 'chat') userPrompt = '【对话模式】\n' + input;
 
-                const response = await fetch(`${apiBase}/chat/completions`, {
+                const resp = await fetch(apiBase + '/chat/completions', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
                     body: JSON.stringify({
                         model: model,
                         messages: [
@@ -913,20 +476,20 @@
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error?.message || `API 请求失败 (${response.status})`);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.error?.message || 'API 请求失败 (' + resp.status + ')');
                 }
 
-                const data = await response.json();
+                const data = await resp.json();
                 const result = data.choices[0].message.content;
+                console.log('AI返回:', result);
 
-                // 渲染结果
                 renderResult(result);
 
-            } catch (error) {
-                console.error('生成失败:', error);
-                showError(`生成失败：${error.message}`);
+            } catch (err) {
+                console.error('生成失败:', err);
+                outputArea.innerHTML = '<div class="error">⚠️ ' + err.message + '</div>';
             } finally {
                 isGenerating = false;
                 generateBtn.disabled = false;
@@ -936,125 +499,175 @@
 
         // 渲染结果
         function renderResult(text) {
-            const lines = text.trim().split('\n');
-            let html = '';
-            let count = 0;
-            let sCount = 0;
-            let bCount = 0;
-            let skipCount = 0;
+            const lines = text.trim().split('\n').filter(l => l.trim());
 
-            // 解析简历模式的输出
-            const resumePattern = /^\d+\.\s+(.+?)\s*·\s*(S|B|C|D)档/i;
-            
-            const items = [];
-            
-            for (const line of lines) {
-                const match = line.match(resumePattern);
-                if (match) {
-                    count++;
-                    const name = match[1];
-                    const level = match[2].toUpperCase();
-                    const isSkip = level === 'C' || level === 'D';
-                    
-                    if (isSkip) skipCount++;
-                    else if (level === 'S') sCount++;
-                    else if (level === 'B') bCount++;
-                    
-                    // 提取理由或开场白
-                    let content = line.substring(match[0].length).trim();
-                    
-                    items.push({ name, level, isSkip, content });
-                }
-            }
+            // 判断是否是简历格式
+            const isResume = lines.some(l =>
+                /共识别\s*\d+\s*份/.test(l) ||
+                /[·•]\s*[SBCD]档/i.test(l) ||
+                /^\d+\s*[.、].+[·•][SBCD]档/i.test(l)
+            );
 
-            // 如果不是简历格式，按对话模式或纯文本显示
-            if (count === 0) {
-                html = `
-                    <div class="output-item">
-                        <div class="item-header">
-                            <span class="name">回复话术</span>
-                            <button class="copy-btn" onclick="copyText(document.querySelector('.output-item .content').textContent)">复制</button>
-                        </div>
-                        <div class="content">${text.replace(/\n/g, '<br>')}</div>
-                    </div>
-                `;
+            if (isResume) {
+                renderResumeResult(text);
             } else {
-                // 显示统计
-                html = `
-                    <div class="stats">
-                        <div class="stat-item">
-                            <div class="stat-number">${count}</div>
-                            <div class="stat-label">总人数</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">${sCount}</div>
-                            <div class="stat-label">S 档</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">${bCount}</div>
-                            <div class="stat-label">B 档</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">${skipCount}</div>
-                            <div class="stat-label">跳过</div>
-                        </div>
-                    </div>
-                `;
+                renderChatResult(text);
+            }
+        }
 
-                // 渲染每个结果
-                for (const item of items) {
-                    if (item.isSkip) {
-                        const reason = item.content.replace(/^·\s*跳过\s*（?/, '').replace(/）?$/, '');
-                        html += `
-                            <div class="output-item skip">
-                                <div class="item-header">
-                                    <span class="name">${item.name}</span>
-                                    <span class="level">${item.level}档 · 跳过</span>
-                                </div>
-                                <div class="reason">${reason}</div>
-                            </div>
-                        `;
-                    } else {
-                        const opener = item.content.replace(/^[·\s]+/, '').trim();
-                        html += `
-                            <div class="output-item">
-                                <div class="item-header">
-                                    <span class="name">${item.name}</span>
-                                    <div style="display: flex; gap: 8px; align-items: center;">
-                                        <span class="level">${item.level}档</span>
-                                        <button class="copy-btn" onclick="copyText(this.closest('.output-item').querySelector('.content').textContent)">复制</button>
-                                    </div>
-                                </div>
-                                <div class="content">${opener}</div>
-                            </div>
-                        `;
+        // 渲染简历结果
+        function renderResumeResult(text) {
+            const lines = text.trim().split('\n').filter(l => l.trim());
+            const items = [];
+
+            // 多个正则尝试匹配
+            const patterns = [
+                /^\d+\s*[.、]\s*(.+?)\s*[·•]\s*([SBCD])档\s*[·•\s：:]*\s*(.+)$/i,
+                /^\d+\s*[.、]\s*(.+?)\s+([SBCD])档\s*[·•\s：:]*\s*(.+)$/i,
+                /^\d+\s*[.、]\s*(.+?)([SBCD])档\s*(.+)$/i,
+            ];
+
+            for (const line of lines) {
+                if (!/^\d+\s*[.、]/.test(line)) continue; // 跳过非条目行
+
+                let matched = false;
+                for (const p of patterns) {
+                    const m = line.match(p);
+                    if (m) {
+                        const name = m[1].trim();
+                        const level = m[2].toUpperCase();
+                        let content = m[3].trim();
+                        content = content.replace(/^[·•\s：:]+/, ''); // 清理开头分隔符
+
+                        const isSkip = content.startsWith('跳过') || level === 'C' || level === 'D';
+                        let reason = '';
+                        if (isSkip) {
+                            const rm = content.match(/跳过[（(](.+?)[）)]?/) || content.match(/跳过[:：]?\s*(.+)/);
+                            reason = rm ? rm[1].trim() : content;
+                        }
+
+                        items.push({ name, level, isSkip, content, reason });
+                        matched = true;
+                        break;
                     }
                 }
 
-                outputHint.textContent = `处理完成`;
+                // 保底：识别为跳过的条目
+                if (!matched && line.includes('跳过')) {
+                    const nm = line.match(/^\d+\s*[.、]\s*(.+?)\s*[·•\s]/);
+                    const name = nm ? nm[1].trim() : '候选人' + (items.length + 1);
+                    items.push({ name, level: 'C', isSkip: true, content: line, reason: line });
+                }
             }
 
-            outputArea.innerHTML = html;
-        }
+            // 如果一个都没解析出来，直接当作文本显示
+            if (items.length === 0) {
+                renderChatResult(text);
+                return;
+            }
 
-        // 复制文本
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // 复制成功提示
-            }).catch(err => {
-                console.error('复制失败:', err);
+            // 统计
+            const sCount = items.filter(i => i.level === 'S' && !i.isSkip).length;
+            const bCount = items.filter(i => i.level === 'B' && !i.isSkip).length;
+            const skipCount = items.filter(i => i.isSkip).length;
+
+            let html = '';
+
+            // 统计面板
+            html += `
+                <div class="stats">
+                    <div class="stat-item"><div class="stat-number">${items.length}</div><div class="stat-label">总人数</div></div>
+                    <div class="stat-item"><div class="stat-number">${sCount}</div><div class="stat-label">S档</div></div>
+                    <div class="stat-item"><div class="stat-number">${bCount}</div><div class="stat-label">B档</div></div>
+                    <div class="stat-item"><div class="stat-number">${skipCount}</div><div class="stat-label">跳过</div></div>
+                </div>`;
+
+            // 每个候选人卡片
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.isSkip) {
+                    html += `
+                        <div class="output-item skip">
+                            <div class="item-header">
+                                <span class="name">${escapeHtml(item.name)}</span>
+                                <span class="level">${item.level}档 · 跳过</span>
+                            </div>
+                            <div class="reason">${escapeHtml(item.reason)}</div>
+                        </div>`;
+                } else {
+                    html += `
+                        <div class="output-item">
+                            <div class="item-header">
+                                <span class="name">${escapeHtml(item.name)}</span>
+                                <div class="header-actions">
+                                    <span class="level">${item.level}档</span>
+                                    <button class="copy-btn" data-idx="${i}">复制</button>
+                                </div>
+                            </div>
+                            <div class="content" data-content="${i}">${escapeHtml(item.content)}</div>
+                        </div>`;
+                }
+            }
+
+            // 原文折叠
+            html += `
+                <details class="raw-output">
+                    <summary>查看原始输出（调试用）</summary>
+                    <pre>${escapeHtml(text)}</pre>
+                </details>`;
+
+            outputArea.innerHTML = html;
+            outputHint.textContent = '处理完成';
+
+            // 绑定复制按钮（事件委托）
+            outputArea.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = this.getAttribute('data-idx');
+                    const contentEl = outputArea.querySelector('[data-content="' + idx + '"]');
+                    if (contentEl) {
+                        copyText(contentEl.textContent, this);
+                    }
+                });
             });
         }
 
-        // 全局暴露给onclick用
-        window.copyText = copyText;
+        // 渲染对话结果
+        function renderChatResult(text) {
+            outputArea.innerHTML = `
+                <div class="output-item">
+                    <div class="item-header">
+                        <span class="name">回复话术</span>
+                        <button class="copy-btn" id="chatCopyBtn">复制</button>
+                    </div>
+                    <div class="content" id="chatContent">${text.replace(/\n/g, '<br>')}</div>
+                </div>
+                <details class="raw-output">
+                    <summary>查看原始输出（调试用）</summary>
+                    <pre>${escapeHtml(text)}</pre>
+                </details>`;
+            outputHint.textContent = '生成完成';
+
+            const btn = document.getElementById('chatCopyBtn');
+            const content = document.getElementById('chatContent');
+            if (btn && content) {
+                btn.addEventListener('click', () => copyText(content.innerText, btn));
+            }
+        }
+
+        // HTML转义
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
 
         // 初始化
         loadSettings();
 
-        // 支持 Ctrl+Enter 快捷生成
-        inputText.addEventListener('keydown', (e) => {
+        // Ctrl+Enter 快捷键
+        inputText.addEventListener('keydown', e => {
             if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
                 generateBtn.click();
             }
         });
