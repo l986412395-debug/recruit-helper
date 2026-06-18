@@ -3,326 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>知晓传媒 - 招聘助手</title>
+    <title>知晓传媒 · AI招聘助手</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        :root {
+            --primary: #00f5ff;
+            --secondary: #7b2ff7;
+            --accent: #ff00ff;
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(20, 20, 35, 0.6);
+            --bg-card-hover: rgba(30, 30, 50, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --border-glow: rgba(0, 245, 255, 0.3);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* 背景动画网格 */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 背景光晕 */
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .glow-1 {
+            top: -200px;
+            left: -200px;
+            background: var(--secondary);
+            animation: float1 8s ease-in-out infinite;
+        }
+
+        .glow-2 {
+            bottom: -200px;
+            right: -200px;
+            background: var(--primary);
+            animation: float2 10s ease-in-out infinite;
+        }
+
+        .glow-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--accent);
+            opacity: 0.15;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-100px, -100px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
         }
+
+        /* 顶部标题 */
         .header {
             text-align: center;
-            padding: 30px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            position: relative;
         }
+
         .header h1 {
-            font-size: 28px;
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
             margin-bottom: 8px;
+            animation: gradientShift 4s ease infinite;
+            background-size: 200% 200%;
         }
-        .header p {
-            opacity: 0.9;
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
             font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
         }
+
+        .header .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--primary);
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* 设置面板 */
         .settings-bar {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
-        .settings-bar label {
-            font-size: 13px;
-            color: #666;
+
+        .setting-item {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 180px;
         }
-        .settings-bar input {
-            padding: 8px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 13px;
-            width: 200px;
+
+        .setting-item label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
-        .settings-bar input:focus {
+
+        .setting-item input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .setting-item input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
         }
+
+        /* 主内容区 */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
+            height: calc(100vh - 340px);
+            min-height: 500px;
         }
-        @media (max-width: 900px) {
+
+        @media (max-width: 1000px) {
             .main-content {
                 grid-template-columns: 1fr;
+                height: auto;
+            }
+            .panel {
+                min-height: 400px;
             }
         }
+
+        /* 面板 */
         .panel {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 280px);
-            min-height: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scanline 3s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .panel:hover {
+            border-color: rgba(0, 245, 255, 0.5);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
+                        0 0 40px rgba(0, 245, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
         .panel-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            font-weight: 600;
-            font-size: 15px;
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 1px;
         }
+
+        .panel-header .title-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-header .icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
         .panel-header .hint {
             font-size: 12px;
-            color: #999;
+            color: var(--text-secondary);
             font-weight: normal;
         }
+
         .panel-body {
             flex: 1;
-            padding: 15px 20px;
+            padding: 20px 25px;
             overflow-y: auto;
+            position: relative;
         }
+
+        /* 滚动条样式 */
+        .panel-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .panel-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .panel-body::-webkit-scrollbar-thumb {
+            background: rgba(0, 245, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .panel-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 245, 255, 0.4);
+        }
+
+        /* 模式切换 */
+        .mode-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 245, 255, 0.1);
+        }
+
+        .mode-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .mode-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .mode-tab.active {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.2), rgba(123, 47, 247, 0.2));
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 245, 255, 0.2);
+        }
+
+        /* 输入框 */
         textarea {
             width: 100%;
-            height: 100%;
+            height: calc(100% - 50px);
+            background: transparent;
             border: none;
             resize: none;
             font-size: 14px;
             line-height: 1.8;
+            color: var(--text-primary);
             font-family: inherit;
-            color: #333;
         }
+
         textarea:focus {
             outline: none;
         }
+
         textarea::placeholder {
-            color: #aaa;
+            color: rgba(160, 160, 192, 0.5);
         }
-        .output-area {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #333;
-        }
-        .output-item {
-            padding: 12px 0;
-            border-bottom: 1px dashed #eee;
-        }
-        .output-item:last-child {
-            border-bottom: none;
-        }
-        .output-item .title {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 6px;
-            font-size: 13px;
-        }
-        .output-item.skip .title {
-            color: #999;
-        }
-        .output-item .content {
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        .output-item .reason {
-            color: #999;
-            font-size: 13px;
-        }
-        .copy-btn {
-            background: #f0f2f5;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            color: #666;
-            margin-left: 8px;
-        }
-        .copy-btn:hover {
-            background: #e0e2e5;
-        }
+
+        /* 操作按钮区 */
         .action-bar {
-            padding: 15px 20px;
-            border-top: 1px solid #f0f0f0;
+            padding: 15px 25px 20px;
+            border-top: 1px solid rgba(0, 245, 255, 0.1);
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
+
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #fff;
             flex: 1;
+            box-shadow: 0 4px 20px rgba(0, 245, 255, 0.3);
         }
+
         .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0, 245, 255, 0.4);
         }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
         .btn-primary:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
+
         .btn-secondary {
-            background: #f5f7fa;
-            color: #666;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .btn-secondary:hover {
-            background: #e8ebef;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
         }
+
+        /* 输出区域 */
+        .output-area {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .output-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .output-item:hover {
+            border-color: rgba(0, 245, 255, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .output-item .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .output-item .name {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .output-item .level {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(0, 245, 255, 0.1);
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+
+        .output-item.skip .name {
+            color: var(--text-secondary);
+        }
+
+        .output-item.skip .level {
+            background: rgba(160, 160, 192, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .output-item .content {
+            color: var(--text-primary);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .output-item .reason {
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .copy-btn {
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 245, 255, 0.2);
+        }
+
+        /* 欢迎状态 */
+        .welcome {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-text {
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-hint {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* 加载动画 */
         .loading {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            color: #999;
-            font-size: 14px;
-            padding: 30px 0;
+            gap: 20px;
+            padding: 60px 0;
         }
+
         .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f0f0f0;
-            border-top-color: #667eea;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 245, 255, 0.1);
+            border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
+            position: relative;
         }
+
+        .spinner::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 2px solid transparent;
+            border-top-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        .welcome {
-            color: #999;
-            text-align: center;
-            padding: 60px 20px;
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            letter-spacing: 2px;
         }
-        .welcome-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
+
+        /* 错误提示 */
         .error {
-            background: #fff2f0;
-            color: #ff4d4f;
-            padding: 12px 16px;
-            border-radius: 6px;
+            background: rgba(255, 77, 79, 0.1);
+            border: 1px solid rgba(255, 77, 79, 0.3);
+            color: #ff6b6b;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 13px;
             margin-bottom: 15px;
-            font-size: 13px;
         }
-        .mode-tabs {
+
+        /* 统计信息 */
+        .stats {
             display: flex;
-            gap: 4px;
-            margin-bottom: 10px;
-            background: #f5f7fa;
-            padding: 4px;
-            border-radius: 6px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-        .mode-tab {
+
+        .stat-item {
             flex: 1;
-            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
             text-align: center;
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 4px;
-            color: #666;
-            transition: all 0.2s;
         }
-        .mode-tab.active {
-            background: white;
-            color: #667eea;
-            font-weight: 500;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* 角落装饰 */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            opacity: 0.5;
+        }
+
+        .corner-tl {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 16px 0 0 0;
+        }
+
+        .corner-tr {
+            top: -1px;
+            right: -1px;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 16px 0 0;
+        }
+
+        .corner-bl {
+            bottom: -1px;
+            left: -1px;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 16px;
+        }
+
+        .corner-br {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 16px 0;
         }
     </style>
 </head>
 <body>
+    <!-- 背景效果 -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+
     <div class="container">
+        <!-- 头部 -->
         <div class="header">
-            <h1>🎯 知晓传媒 · 招聘助手</h1>
-            <p>把简历直接粘进来（多份也行）我给你生成开场白；把对方消息粘进来我给你生成回复</p>
+            <h1>AI 招聘助手</h1>
+            <p class="subtitle">KNOW MEDIA · RECRUIT HELPER</p>
+            <div class="badge">⚡ Powered by Gemini 3.5 Flash</div>
         </div>
 
+        <!-- 设置栏 -->
         <div class="settings-bar">
-            <label>
-                API Key:
+            <div class="setting-item">
+                <label>API Key</label>
                 <input type="password" id="apiKey" placeholder="sk-xxxxxxxx" />
-            </label>
-            <label>
-                API 地址:
+            </div>
+            <div class="setting-item">
+                <label>API 地址</label>
                 <input type="text" id="apiBase" value="https://llm-api.net/v1" />
-            </label>
-            <label>
-                模型:
-                <input type="text" id="model" value="gemini-3.5-flash" style="width: 150px;" />
-            </label>
+            </div>
+            <div class="setting-item">
+                <label>模型</label>
+                <input type="text" id="model" value="gemini-3.5-flash" />
+            </div>
         </div>
 
+        <!-- 主内容 -->
         <div class="main-content">
-            <!-- 输入区 -->
+            <!-- 输入面板 -->
             <div class="panel">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                
                 <div class="panel-header">
-                    <span>输入内容</span>
-                    <span class="hint" id="inputHint">粘贴简历或聊天记录</span>
+                    <span class="title-icon">
+                        <span class="icon">📝</span>
+                        输入内容
+                    </span>
+                    <span class="hint" id="inputHint">粘贴简历或对话记录</span>
                 </div>
+                
                 <div class="panel-body">
                     <div class="mode-tabs">
                         <div class="mode-tab active" data-mode="auto">自动识别</div>
                         <div class="mode-tab" data-mode="resume">简历模式</div>
                         <div class="mode-tab" data-mode="chat">对话模式</div>
                     </div>
-                    <textarea id="inputText" placeholder="在这里粘贴候选人简历（支持多份）或聊天记录...
+                    <textarea id="inputText" placeholder="在此粘贴候选人简历...
 
-示例（简历）：
-张三，25岁，本科学历，有2年带货主播经验，曾在抖音做美妆直播，场均GMV 5万...
-
-示例（对话）：
-候选人：您好，请问这个岗位是做什么的？
-HR：您好，我们是做驾考知识直播的...
-候选人：那薪资待遇怎么样？"></textarea>
+💡 支持多份简历批量处理，直接首尾相连粘贴即可
+💡 也可以粘贴聊天记录，自动生成回复话术"></textarea>
                 </div>
+                
                 <div class="action-bar">
                     <button class="btn btn-secondary" id="clearBtn">清空</button>
-                    <button class="btn btn-primary" id="generateBtn">生成话术</button>
+                    <button class="btn btn-primary" id="generateBtn">✨ 生成话术</button>
                 </div>
             </div>
 
-            <!-- 输出区 -->
+            <!-- 输出面板 -->
             <div class="panel">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                
                 <div class="panel-header">
-                    <span>生成结果</span>
+                    <span class="title-icon">
+                        <span class="icon">🎯</span>
+                        生成结果
+                    </span>
                     <span class="hint" id="outputHint"></span>
                 </div>
+                
                 <div class="panel-body">
                     <div id="outputArea" class="output-area">
                         <div class="welcome">
-                            <div class="welcome-icon">💬</div>
-                            <div>粘贴简历或聊天记录<br>点击「生成话术」开始</div>
+                            <div class="welcome-icon">🚀</div>
+                            <div class="welcome-text">准备好了吗？</div>
+                            <div class="welcome-hint">粘贴简历，一键生成专业开场白</div>
                         </div>
                     </div>
                 </div>
@@ -433,8 +855,9 @@ HR：您好，我们是做驾考知识直播的...
             inputText.value = '';
             outputArea.innerHTML = `
                 <div class="welcome">
-                    <div class="welcome-icon">💬</div>
-                    <div>粘贴简历或聊天记录<br>点击「生成话术」开始</div>
+                    <div class="welcome-icon">🚀</div>
+                    <div class="welcome-text">准备好了吗？</div>
+                    <div class="welcome-hint">粘贴简历，一键生成专业开场白</div>
                 </div>
             `;
             outputHint.textContent = '';
@@ -442,7 +865,7 @@ HR：您好，我们是做驾考知识直播的...
 
         // 显示错误
         function showError(msg) {
-            outputArea.innerHTML = `<div class="error">${msg}</div>`;
+            outputArea.innerHTML = `<div class="error">⚠️ ${msg}</div>`;
         }
 
         // 调用 API
@@ -456,7 +879,7 @@ HR：您好，我们是做驾考知识直播的...
             outputArea.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <span>正在分析内容并生成话术...</span>
+                    <span class="loading-text">AI 正在分析并生成话术...</span>
                 </div>
             `;
             outputHint.textContent = '';
@@ -507,7 +930,7 @@ HR：您好，我们是做驾考知识直播的...
             } finally {
                 isGenerating = false;
                 generateBtn.disabled = false;
-                generateBtn.textContent = '生成话术';
+                generateBtn.textContent = '✨ 生成话术';
             }
         }
 
@@ -516,9 +939,14 @@ HR：您好，我们是做驾考知识直播的...
             const lines = text.trim().split('\n');
             let html = '';
             let count = 0;
+            let sCount = 0;
+            let bCount = 0;
+            let skipCount = 0;
 
             // 解析简历模式的输出
             const resumePattern = /^\d+\.\s+(.+?)\s*·\s*(S|B|C|D)档/i;
+            
+            const items = [];
             
             for (const line of lines) {
                 const match = line.match(resumePattern);
@@ -528,34 +956,14 @@ HR：您好，我们是做驾考知识直播的...
                     const level = match[2].toUpperCase();
                     const isSkip = level === 'C' || level === 'D';
                     
+                    if (isSkip) skipCount++;
+                    else if (level === 'S') sCount++;
+                    else if (level === 'B') bCount++;
+                    
                     // 提取理由或开场白
                     let content = line.substring(match[0].length).trim();
                     
-                    // 处理跳过的情况
-                    if (isSkip && content.startsWith('· 跳过')) {
-                        const reason = content.replace(/^· 跳过\s*（?/, '').replace(/）?$/, '');
-                        html += `
-                            <div class="output-item skip">
-                                <div class="title">
-                                    ${name} · ${level}档 · 跳过
-                                    <button class="copy-btn" onclick="copyText('${name} · ${level}档 · 跳过')">复制</button>
-                                </div>
-                                <div class="reason">${reason}</div>
-                            </div>
-                        `;
-                    } else {
-                        // S/B档开场白
-                        const opener = content.replace(/^[·\s]+/, '').trim();
-                        html += `
-                            <div class="output-item">
-                                <div class="title">
-                                    ${name} · ${level}档
-                                    <button class="copy-btn" onclick="copyText(this.nextElementSibling.textContent)">复制</button>
-                                </div>
-                                <div class="content">${opener}</div>
-                            </div>
-                        `;
-                    }
+                    items.push({ name, level, isSkip, content });
                 }
             }
 
@@ -563,15 +971,67 @@ HR：您好，我们是做驾考知识直播的...
             if (count === 0) {
                 html = `
                     <div class="output-item">
-                        <div class="title">
-                            回复话术
-                            <button class="copy-btn" onclick="copyText(this.parentElement.nextElementSibling.textContent)">复制</button>
+                        <div class="item-header">
+                            <span class="name">回复话术</span>
+                            <button class="copy-btn" onclick="copyText(document.querySelector('.output-item .content').textContent)">复制</button>
                         </div>
                         <div class="content">${text.replace(/\n/g, '<br>')}</div>
                     </div>
                 `;
             } else {
-                outputHint.textContent = `共 ${count} 位候选人`;
+                // 显示统计
+                html = `
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number">${count}</div>
+                            <div class="stat-label">总人数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${sCount}</div>
+                            <div class="stat-label">S 档</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${bCount}</div>
+                            <div class="stat-label">B 档</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${skipCount}</div>
+                            <div class="stat-label">跳过</div>
+                        </div>
+                    </div>
+                `;
+
+                // 渲染每个结果
+                for (const item of items) {
+                    if (item.isSkip) {
+                        const reason = item.content.replace(/^·\s*跳过\s*（?/, '').replace(/）?$/, '');
+                        html += `
+                            <div class="output-item skip">
+                                <div class="item-header">
+                                    <span class="name">${item.name}</span>
+                                    <span class="level">${item.level}档 · 跳过</span>
+                                </div>
+                                <div class="reason">${reason}</div>
+                            </div>
+                        `;
+                    } else {
+                        const opener = item.content.replace(/^[·\s]+/, '').trim();
+                        html += `
+                            <div class="output-item">
+                                <div class="item-header">
+                                    <span class="name">${item.name}</span>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <span class="level">${item.level}档</span>
+                                        <button class="copy-btn" onclick="copyText(this.closest('.output-item').querySelector('.content').textContent)">复制</button>
+                                    </div>
+                                </div>
+                                <div class="content">${opener}</div>
+                            </div>
+                        `;
+                    }
+                }
+
+                outputHint.textContent = `处理完成`;
             }
 
             outputArea.innerHTML = html;
@@ -580,7 +1040,7 @@ HR：您好，我们是做驾考知识直播的...
         // 复制文本
         function copyText(text) {
             navigator.clipboard.writeText(text).then(() => {
-                // 可以加个复制成功的提示
+                // 复制成功提示
             }).catch(err => {
                 console.error('复制失败:', err);
             });
@@ -591,6 +1051,13 @@ HR：您好，我们是做驾考知识直播的...
 
         // 初始化
         loadSettings();
+
+        // 支持 Ctrl+Enter 快捷生成
+        inputText.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateBtn.click();
+            }
+        });
     </script>
 </body>
 </html>
